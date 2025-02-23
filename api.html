@@ -1,0 +1,81 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+   <link href="prism.css" rel="stylesheet" /> 
+   <link href="styles.css" rel="stylesheet" /> 
+</head> 
+<body> 
+   <div id="container">
+
+      <div class="logo">
+         <a href="https://ip.audvy.me">
+           <div>
+             <img src="icon.ico" width="150" height="150" alt="projects">
+           </div>
+         </a>
+     </div>
+      <div class="intro">
+         The ip.audvy.me API
+      </div>
+      <div class="instructions">
+         Calling <Code><a href="https://ip.audvy.me/api/json" class="link" target="_blank" style="text-align: center; align-items: center; text-decoration: none">ip.audvy.me/api/json</a></Code> will result in a JSON response in the following format
+      </div>
+      <div class="codeblock">
+         <pre>
+            <code class="language-json">
+         
+               {
+                  "ipv4":"xxx.xxx.xxx.xxx"
+               }
+         
+            </code>
+         </pre>
+      </div>
+      <div class="instructions">
+         To parse using C#
+      </div>
+      <div class="parse_csharp codeblock">
+         <pre>
+            <code class="line-numbers language-csharp">
+         
+               using System.Net;
+
+
+               namespace IPGrabber
+               {
+                  class IPv4Address
+                  {
+                     private static async Task&lt;IPAddress?&gt; GetIpAddress()
+                     {
+                           var GetMessageFromSite = (await new HttpClient().GetStringAsync("https://ip.audvy.me/api/json"))
+                              .Replace("\\r\\n", "").Replace("\\n", "").Trim();
+
+                           int pFrom = GetMessageFromSite.IndexOf("&#123;\"ipv4\":\"") + "&#123;\"ipv4\":\"".Length;
+                           int pTo = GetMessageFromSite.LastIndexOf&#40;"\"}"&#41;;
+
+                           String result = GetMessageFromSite.Substring(pFrom, pTo - pFrom);
+
+                           if (!IPAddress.TryParse(result, out var ipAddress)) return null;
+                           return ipAddress;
+                     }
+
+                     public static string GetIP()
+                     {
+                           var externalIpTask = GetIpAddress();
+                           GetIpAddress().Wait();
+                           var externalIpString = externalIpTask.Result ?? IPAddress.Loopback;
+
+                           return externalIpString.ToString();
+                     }
+                  }
+               &#125;
+         
+            </code>
+         </pre>
+      </div>
+      
+   </div>
+
+   <script src="prism.js"></script> 
+</body> 
+</html>
